@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def pagina_inicial():
-    return "Hello World"
+    return "There's a point where we just let the music take over everything."
 
 if __name__ == '__main__':
     app.run()
