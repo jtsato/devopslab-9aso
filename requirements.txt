@@ -2,3 +2,6 @@ flask
 flask-wtf
 gunicorn
 tox
+pytest
+pytest-xdist
+coverage
