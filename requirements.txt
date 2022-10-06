@@ -2,3 +2,4 @@ flask
 flask-wtf
 gunicorn
 tox
+pytest
