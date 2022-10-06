@@ -20,7 +20,7 @@ jobs:
           python-version: '3.7.11'
 
       - name: Install Requirements
-        run:  pip install flask
+        run:  pip install -r requirements.txt
               
       - name: Unit Test
         run: python -m unittest -v test
