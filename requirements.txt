@@ -3,4 +3,3 @@ flask-wtf
 gunicorn
 tox
 pytest-cov
-pytest-xdist
