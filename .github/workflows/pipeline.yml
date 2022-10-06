@@ -5,7 +5,7 @@ name: DevOpsLab Pipeline
 on: 
   push:
     branches:
-      - **
+      - '**'
 
 jobs:
   Build:
