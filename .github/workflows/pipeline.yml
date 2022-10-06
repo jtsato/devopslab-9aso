@@ -25,7 +25,7 @@ jobs:
         run:  pip install -r requirements.txt
               
       - name: Unit Test
-        run: python -m unittest -v test
+        run: python -m unittest -v
 
       - name: Run tox
         run: tox -e py
