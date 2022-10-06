@@ -25,6 +25,9 @@ jobs:
       - name: Unit Test
         run: python -m unittest -v test
 
+      - name: Run tox
+        run: tox -e py
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
