@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install Requirements
-        run: pip install flask flask-wtf
+        run: pip install flask flask-wtf tox
 
       - name: Unit Test
         run: python -m unittest -v
