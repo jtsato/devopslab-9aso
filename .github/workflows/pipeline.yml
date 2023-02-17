@@ -5,7 +5,7 @@ name: DevOpsLab Pipeline
 on:
   push:
     branches:
-      - '**'
+      - "**"
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install Requirements
-        run: pip install flask flask-wtf tox
+        run: pip install -r requirements-dev.txt
 
       - name: Unit Test
         run: python -m unittest -v
