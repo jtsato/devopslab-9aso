@@ -47,8 +47,32 @@ jobs:
           docker build -t ${{ vars.GOOGLE_ARTIFACT }}/${{ vars.GOOGLE_PROJECT_ID }}/${{ vars.GOOGLE_REPONAME }}/${{ vars.GOOGLE_MYAPP }}:latest .
           docker push ${{ vars.GOOGLE_ARTIFACT }}/${{ vars.GOOGLE_PROJECT_ID }}/${{ vars.GOOGLE_REPONAME }}/${{ vars.GOOGLE_MYAPP }}:latest
 
-  Deploy:
+  Deploy-Homolog:
     needs: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3 # https://github.com/actions/checkout
+
+      - name: Auth GCP
+        uses: 'google-github-actions/auth@v1' # https://github.com/google-github-actions/auth
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: Cloud Run Deploy - Homolog
+        id: homolog-deploy
+        uses: 'google-github-actions/deploy-cloudrun@v1'  # https://github.com/marketplace/actions/deploy-to-cloud-run
+        with:
+          service: ${{ vars.GOOGLE_MYAPP }}-homolog
+          image:   ${{ vars.GOOGLE_ARTIFACT }}/${{ vars.GOOGLE_PROJECT_ID }}/${{ vars.GOOGLE_REPONAME }}/${{ vars.GOOGLE_MYAPP }}:latest
+          flags: '--allow-unauthenticated'
+
+      - name: Test Homolog
+        run: 'curl "${{ steps.homolog-deploy.outputs.url }}"'
+
+  Deploy-Production:
+    needs: Deploy-Homolog
     runs-on: ubuntu-latest
 
     steps:
@@ -56,18 +80,17 @@ jobs:
         uses: actions/checkout@v3 # https://github.com/actions/checkout
 
       - name: Auth GCP
-        uses: "google-github-actions/auth@v1" # https://github.com/google-github-actions/auth
+        uses: 'google-github-actions/auth@v1' # https://github.com/google-github-actions/auth
         with:
-          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
 
-      - name: Cloud Run Deploy
-        id: deploy
-        run: |-
-          gcloud run deploy ${{ vars.GOOGLE_MYAPP }} \
-            --quiet \
-            --region  ${{ vars.GOOGLE_REGION }} \
-            --image ${{ vars.GOOGLE_ARTIFACT }}/${{ vars.GOOGLE_PROJECT_ID }}/${{ vars.GOOGLE_REPONAME }}/${{ vars.GOOGLE_MYAPP }}:latest \
-            --platform managed \
-            --allow-unauthenticated \
-            --project ${{ vars.GOOGLE_PROJECT_ID }} \
-            --format json
+      - name: Cloud Run Deploy - Production
+        id: prod-deploy
+        uses: 'google-github-actions/deploy-cloudrun@v1'  # https://github.com/marketplace/actions/deploy-to-cloud-run
+        with:
+          service: ${{ vars.GOOGLE_MYAPP }}-prod
+          image:   ${{ vars.GOOGLE_ARTIFACT }}/${{ vars.GOOGLE_PROJECT_ID }}/${{ vars.GOOGLE_REPONAME }}/${{ vars.GOOGLE_MYAPP }}:latest
+          flags: '--allow-unauthenticated'
+
+      - name: Test Prod
+        run: 'curl "${{ steps.prod-deploy.outputs.url }}"'
